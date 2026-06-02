@@ -131,7 +131,10 @@ class SingleBVPNet(nn.Module):
         # Enables us to compute gradients w.r.t. coordinates
         # TODO: should not need to .clone().detach().requires_grad_(True); instead, use .retain_grad() on input in calling script
         # otherwise, .detach() removes input from the graph so grad cannot propagate back end-to-end, e.g., percept -> NN -> state estimation (input)
-        coords_org = model_input['coords'].clone().detach().requires_grad_(True)
+        coords = model_input['coords']
+        if not coords.requires_grad:
+            coords = coords.requires_grad_(True)
+        coords_org = coords
         coords = coords_org
 
         output = self.net(coords)

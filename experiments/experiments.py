@@ -142,7 +142,9 @@ class Experiment(ABC):
                     model_input = {key: value.to(device) for key, value in model_input.items()}
                     gt = {key: value.to(device) for key, value in gt.items()}
 
-                    model_results = self.model({'coords': model_input['model_coords']})
+                    coords = model_input['model_coords']
+                    coords = coords.requires_grad_(True)
+                    model_results = self.model({'coords': coords})
 
                     states = self.dataset.dynamics.input_to_coord(model_results['model_in'].detach())[..., 1:]
                     values = self.dataset.dynamics.io_to_value(model_results['model_in'].detach(), model_results['model_out'].squeeze(dim=-1))
